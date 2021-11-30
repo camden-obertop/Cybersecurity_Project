@@ -3,10 +3,13 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+// ChatBehavior inspired by Dzung Nguyen's tutorial: https://dzungpng.github.io/2020/07/10/mirror/ 
 public class ChatBehaviour : NetworkBehaviour {
     [SerializeField] private Text chatText = null;
     [SerializeField] private InputField inputField = null;
     [SerializeField] private GameObject canvas = null;
+
+    const string key = "b14ca5898a4e4133bbce2ea2315a1916";
 
     private static event Action<string> OnMessage;
 
@@ -26,7 +29,8 @@ public class ChatBehaviour : NetworkBehaviour {
     }
 
     // When a new message is added, update the Scroll View's Text to include the new message
-    private void HandleNewMessage(string message) {
+    private void HandleNewMessage(string message)
+    {
         chatText.text += message;
     }
 
@@ -42,12 +46,13 @@ public class ChatBehaviour : NetworkBehaviour {
     [Command]
     private void CmdSendMessage(string message) {
         // Validate message
-        RpcHandleMessage($"[{connectionToClient.connectionId}]: {message}");
+        message = Cryptography.Encrypt(key, $"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.AES);
+        RpcHandleMessage(message);
     }
 
     [ClientRpc]
     private void RpcHandleMessage(string message) {
+        message = Cryptography.Decrypt(key, message, Cryptography.EncryptionType.AES);
         OnMessage?.Invoke($"\n{message}");
     }
-
 }
