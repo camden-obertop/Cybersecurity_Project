@@ -46,13 +46,13 @@ public class ChatBehaviour : NetworkBehaviour {
     [Command]
     private void CmdSendMessage(string message) {
         // Validate message
-        message = Cryptography.Encrypt(key, $"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.AES);
+        message = Cryptography.Encrypt(key, $"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.DES);
         RpcHandleMessage(message);
     }
 
     [ClientRpc]
     private void RpcHandleMessage(string message) {
-        message = Cryptography.Decrypt(key, message, Cryptography.EncryptionType.AES);
+        message = Cryptography.Decrypt(key, message, Cryptography.EncryptionType.DES);
         OnMessage?.Invoke($"\n{message}");
     }
 }
