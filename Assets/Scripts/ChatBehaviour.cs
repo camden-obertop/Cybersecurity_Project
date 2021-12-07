@@ -1,5 +1,6 @@
 using Mirror;
 using System;
+using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,9 +8,11 @@ using UnityEngine.UI;
 public class ChatBehaviour : NetworkBehaviour {
     [SerializeField] private Text chatText = null;
     [SerializeField] private InputField inputField = null;
+    [SerializeField] private Text encryptedText = null;
     [SerializeField] private GameObject canvas = null;
 
     const string key = "b14ca5898a4e4133bbce2ea2315a1916";
+    private RSACryptoServiceProvider provider = Cryptography.GenerateRSAProvider();
 
     private static event Action<string> OnMessage;
 
@@ -46,13 +49,14 @@ public class ChatBehaviour : NetworkBehaviour {
     [Command]
     private void CmdSendMessage(string message) {
         // Validate message
-        message = Cryptography.Encrypt(key, $"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.DES);
+        message = Cryptography.Encrypt($"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.RSA, provider:provider);
         RpcHandleMessage(message);
     }
 
     [ClientRpc]
     private void RpcHandleMessage(string message) {
-        message = Cryptography.Decrypt(key, message, Cryptography.EncryptionType.DES);
+        encryptedText.text = $"Encrypted text: {message}";
+        message = Cryptography.Decrypt(message, Cryptography.EncryptionType.RSA, provider:provider);
         OnMessage?.Invoke($"\n{message}");
     }
 }

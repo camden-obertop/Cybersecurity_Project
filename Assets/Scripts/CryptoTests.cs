@@ -6,9 +6,9 @@ public class CryptoTests : MonoBehaviour
     {
         string key = "b14ca5898a4e4133bbce2ea2315a1916";
 
-        string inputString = "My name is minion bob!";
-        string cipher = Cryptography.Encrypt(key, inputString, Cryptography.EncryptionType.AES);
-        string decrypted = Cryptography.Decrypt(key, cipher, Cryptography.EncryptionType.AES);
+        string inputString = "!";
+        string cipher = Cryptography.Encrypt(inputString, Cryptography.EncryptionType.AES, key);
+        string decrypted = Cryptography.Decrypt(cipher, Cryptography.EncryptionType.AES, key);
         
         print($"Input string: {inputString}");
         print($"Cipher text: {cipher}");
