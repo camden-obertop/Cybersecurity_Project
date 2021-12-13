@@ -49,14 +49,15 @@ public class ChatBehaviour : NetworkBehaviour {
     [Command]
     private void CmdSendMessage(string message) {
         // Validate message
-        message = Cryptography.Encrypt($"[{connectionToClient.connectionId}]: {message}", Cryptography.EncryptionType.RSA, provider:provider);
+        message = Cryptography.Encrypt($"[{connectionToClient.connectionId}]: {message}", 
+            Cryptography.EncryptionType.AES, key:key);
         RpcHandleMessage(message);
     }
 
     [ClientRpc]
     private void RpcHandleMessage(string message) {
         encryptedText.text = $"Encrypted text: {message}";
-        message = Cryptography.Decrypt(message, Cryptography.EncryptionType.RSA, provider:provider);
+        message = Cryptography.Decrypt(message, Cryptography.EncryptionType.AES, provider:provider);
         OnMessage?.Invoke($"\n{message}");
     }
 }
